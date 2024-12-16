@@ -1,7 +1,7 @@
 from openai import OpenAI
 import streamlit as st
 
-client = OpenAI()
+client = OpenAI(api_key="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")
 
 value = st.text_input("Prompt")
 if(value):
@@ -13,4 +13,7 @@ if(value):
         {"role": "user", "content" : "value"}
     ] 
 )   
-    txt.text(completion.choices[0].message.content)
+
+# print(completion.choices[0].message.content)
+
+st.write(completion.choices[0].message.content)
