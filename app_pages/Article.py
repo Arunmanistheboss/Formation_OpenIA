@@ -1,30 +1,48 @@
-from openai import OpenAI
 import streamlit as st
+from openai import OpenAI
 
 client = OpenAI()
 
-value = st.chat_input("Thème de l'article")
 
-with st.chat_message("user"):
-    if (value):
-        txt = st.text("Waiting for API")
+def generate_article(prompt):
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "user", 
+                "content": f"Écrivez un article en deux paragraphes sur le thème suivant : {prompt}"
+            }
+        ]
+    )
+    
+    return completion.choices[0].message.content
 
-        prompt = "Écris un article sur le sujet suivant : '"+value+"'. L'article doit comporter au 2 paragraphe."
 
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role":"user","content":prompt}]
-        )
+def generate_image(prompt):
+    response = client.images.generate(
+        model="dall-e-3",  
+        prompt=prompt,
+        size="1024x1024"
+    )
+    
+    return response.data[0].url
 
-        txt.text(completion.choices[0].message.content)
+prompt = st.text_input("Entrez un sujet d'article")
 
-        article_image = "illustrate this article:"+completion.choices[0].message.content
+if st.button("Générer"):
+    if prompt:
+        try:
+            article = generate_article(prompt)
+            st.header(f"Article sur : {prompt}")
+            st.write(article)
+        except Exception as e:
+            st.error(f"Erreur: {e}")
 
-        image = client.images.generate(
-                prompt=value,
-                model="dall-e-2",
-                n=2,
-                size="512x512")
-
-        st.image(image.data[0].url)
-        st.image(image.data[1].url)
+        try:
+            image_url = generate_image(prompt)
+            st.header("Image générée par DALL-E")
+            st.image(image_url, caption="Image générée par DALL-E", use_container_width=True)
+        except Exception as e:
+            st.error(f"Erreur: {e}")
+    else:
+        st.warning("Veuillez entrer un sujet pour générer un article et une image")
