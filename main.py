@@ -3,15 +3,21 @@ import streamlit as st
 
 client = OpenAI()
 
-value = st.text_input("Prompt...")
+value = st.chat_input("Prompt...")
 if (value):
-    txt = st.header("Waiting for api...")
+    with(st.chat_message("user")):
+        st.write(value)
+        
+    with(st.chat_message("assistant")):
 
-    completion = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {"role": "user","content": value}
-    ]
-    )
 
-    txt.text(completion.choices[0].message.content)
+        txt = st.header("Waiting for api...")
+
+        completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "user","content": value}
+        ]
+        )
+
+        txt.text(completion.choices[0].message.content)
