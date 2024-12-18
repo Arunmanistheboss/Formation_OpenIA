@@ -9,7 +9,7 @@ client = OpenAI()
 audio = st.audio_input("Dites quelque chose")
 
 if (audio):
-    file_path = Path(__file__).parent.parent / "input.mp3"
+    file_path = Path(__file__).parent / "input.mp3"
 
     with open(file_path, "wb") as file:
         file.write(audio.getbuffer())  
@@ -41,7 +41,7 @@ if (audio):
         input=output  
     )
 
-    file_path = Path(__file__).parent.parent / "output.mp3"
+    file_path = Path(__file__).parent / "output.mp3"
 
     response.stream_to_file(file_path)
 
